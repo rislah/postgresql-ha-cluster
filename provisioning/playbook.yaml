@@ -1,3 +1,10 @@
+- hosts: backup
+  gather_facts: yes
+  roles:
+    - postgres
+    - role: pgbackrest
+      client: False
+
 - hosts: etcd
   gather_facts: yes
   roles:
@@ -11,3 +18,5 @@
   roles:
     - postgres
     - patroni
+    - role: pgbackrest
+      client: true

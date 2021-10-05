@@ -21,6 +21,13 @@ bootstrap:
       use_slots: true
       parameters:
         wal_keep_segments: 100
+        unix_socket_directories: '/var/run/postgresql/'
+
+{% if 'pgbackrest' in role_names %}
+        archive_mode: "on"
+        archive_command: 'pgbackrest --stanza=main archive-push %p'
+{% endif %}
+
   initdb:
     - encoding: UTF8
     - data-checksums
@@ -39,7 +46,7 @@ bootstrap:
 postgresql:
   listen: 0.0.0.0:5432
   connect_address: {{ ansible_eth1.ipv4.address }}:5432
-  data_dir: /var/lib/postgresql/patroni_cluster/{{ansible_hostname}}/data
+  data_dir: /var/lib/postgresql/patroni_cluster/data
   bin_dir: /usr/lib/postgresql/14//bin
   authentication:
     replication:
@@ -57,7 +64,9 @@ postgresql:
     # Fully qualified kerberos ticket file for the running user
     # same as KRB5CCNAME used by the GSS
 #   krb_server_keyfile: /var/spool/keytabs/postgres
-    unix_socket_directories: '.'
+    #unix_socket_directories: '.'
+    unix_socket_directories: '/var/run/postgresql/'
+
   # Additional fencing script executed after acquiring the leader lock but before promoting the replica
   #pre_promote: /path/to/pre_promote.sh
 

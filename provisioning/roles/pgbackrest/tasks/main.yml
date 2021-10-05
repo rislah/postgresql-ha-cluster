@@ -2,6 +2,10 @@
   apt:
     name: pgbackrest
 
+- name: Create user
+  user:
+    name: pgbackrest
+
 - name: Create log dir
   file:
     path: /var/log/pgbackrest
@@ -9,39 +13,51 @@
     owner: pgbackrest
     group: pgbackrest
     mode: '770'
-
-- name: Create pgbackrest dir
+    
+- name: Create pgbackrest lib dir
   file:
-    path: /etc/pgbackrest/conf.d
+    path: /var/lib/pgbackrest
     state: directory
     owner: pgbackrest
+    group: pgbackrest
+
+# - name: Create pgbackrest dir
+#   file:
+#     path: /etc/pgbackrest/conf.d
+#     state: directory
+#     owner: pgbackrest
+#     group: pgbackrest
 
 - name: Create config file
-  file:
-    path: /etc/pgbackrest/conf.d/pgbackrest.conf
-    state: file
+  template:
+    src: pgbackrest.conf_server.j2
+    dest: /etc/pgbackrest.conf
     owner: pgbackrest
     group: pgbackrest
     mode: '640'
+  when: client == false
 
-- name: Create repository host key pair
-  file:
-    path: /home/pgbackrest/.ssh
-    state: directory
+- name: Create config file
+  template:
+    src: pgbackrest.conf_client.j2
+    dest: /etc/pgbackrest.conf
     owner: pgbackrest
-    group: pgbackrest
-    mode: 0750
+    group: postgres
+    mode: '640'
+  when: client == true
+    
+# - name: Create repository host key pair
+#   file:
+#     path: /home/pgbackrest/.ssh
+#     state: directory
+#     owner: pgbackrest
+#     group: pgbackrest
+#     mode: 0750
 
-- name: Create repository host key pair
-  file:
-    path: /home/pgbackrest/.ssh
-    state: directory
-    owner: pgbackrest
-    group: pgbackrest
-    mode: 0750
-
-- command: ssh-keygen -f /home/pgbackrest/.ssh/id_rsa -t rsa -b 4096 -N ""
-  args:
-    creates: /home/pgbackrest/.ssh/id_rsa
-
-
+# - name: Create repository host key pair
+#   file:
+#     path: /home/pgbackrest/.ssh
+#     state: directory
+#     owner: pgbackrest
+#     group: pgbackrest
+#     mode: 0750

@@ -43,14 +43,15 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "ansible" do |a|
-    a.playbook = "provisioning/playbook.yml"
+    a.playbook = "provisioning/playbook.yaml"
     a.become = true
     a.groups = {
       "etcd" => etcd_nodes,
       "etcd_master" => etcd_nodes[0],
       "pg" => postgres_nodes,
-      "pg:vars" => {"etcd_server" => saved_ips["etcd01"]},
-      "backup:vars" => {"pg_servers" => saved_ips.select {|key,value| key.include?("pg")}}
+      "pg:vars" => {"etcd_server" => saved_ips["etcd01"], "backup_server" => saved_ips["backup01"]},
+      "backup" => backup_nodes,
+      "backup:vars" => {"pg_servers" => saved_ips.select {|key,value| key.include?("pg")}.map {|k, v| v}.to_a}
     }
   end
 
