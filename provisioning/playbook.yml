@@ -1,0 +1,13 @@
+- hosts: etcd
+  gather_facts: yes
+  roles:
+    - role: andrewrothstein.etcd-cluster
+      etcd_secure: False
+      etcd_iface_public: eth1
+      etcd_cluster_name: patroni-cluster
+
+- hosts: pg
+  gather_facts: yes
+  roles:
+    - postgres
+    - patroni

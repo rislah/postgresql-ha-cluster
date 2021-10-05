@@ -1,0 +1,73 @@
+name: {{ ansible_hostname }}
+scope: patroni_cluster
+
+restapi:
+  listen: 0.0.0.0:8008
+  connect_address: {{ ansible_eth1.ipv4.address }}:8008
+
+etcd:
+  host: {{etcd_server}}:2379
+  protocol: http
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_keep_segments: 100
+  initdb:
+    - encoding: UTF8
+    - data-checksums
+
+  pg_hba:
+    - host replication replicator 192.168.77.0/24 md5
+    - host all all 0.0.0.0/0 md5
+
+  users:
+    admin:
+      password: admin
+      options:
+        - createrole
+        - createdb
+
+postgresql:
+  listen: 0.0.0.0:5432
+  connect_address: {{ ansible_eth1.ipv4.address }}:5432
+  data_dir: /var/lib/postgresql/patroni_cluster/{{ansible_hostname}}/data
+  bin_dir: /usr/lib/postgresql/14//bin
+  authentication:
+    replication:
+      username: replicator
+      password: test
+    superuser:
+      username: postgres
+      password: test
+    rewind:  # Has no effect on postgres 10 and lower
+      username: rewind_user
+      password: rewind_password
+  # Server side kerberos spn
+#  krbsrvname: postgres
+  parameters:
+    # Fully qualified kerberos ticket file for the running user
+    # same as KRB5CCNAME used by the GSS
+#   krb_server_keyfile: /var/spool/keytabs/postgres
+    unix_socket_directories: '.'
+  # Additional fencing script executed after acquiring the leader lock but before promoting the replica
+  #pre_promote: /path/to/pre_promote.sh
+
+#watchdog:
+#  mode: automatic # Allowed values: off, automatic, required
+#  device: /dev/watchdog
+#  safety_margin: 5
+
+# tags:
+#     nofailover: false
+#     noloadbalance: false
+#     clonefrom: false
+#     nosync: false

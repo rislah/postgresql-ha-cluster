@@ -1,0 +1,47 @@
+- name: Install pgbackrest
+  apt:
+    name: pgbackrest
+
+- name: Create log dir
+  file:
+    path: /var/log/pgbackrest
+    state: directory
+    owner: pgbackrest
+    group: pgbackrest
+    mode: '770'
+
+- name: Create pgbackrest dir
+  file:
+    path: /etc/pgbackrest/conf.d
+    state: directory
+    owner: pgbackrest
+
+- name: Create config file
+  file:
+    path: /etc/pgbackrest/conf.d/pgbackrest.conf
+    state: file
+    owner: pgbackrest
+    group: pgbackrest
+    mode: '640'
+
+- name: Create repository host key pair
+  file:
+    path: /home/pgbackrest/.ssh
+    state: directory
+    owner: pgbackrest
+    group: pgbackrest
+    mode: 0750
+
+- name: Create repository host key pair
+  file:
+    path: /home/pgbackrest/.ssh
+    state: directory
+    owner: pgbackrest
+    group: pgbackrest
+    mode: 0750
+
+- command: ssh-keygen -f /home/pgbackrest/.ssh/id_rsa -t rsa -b 4096 -N ""
+  args:
+    creates: /home/pgbackrest/.ssh/id_rsa
+
+
