@@ -1,0 +1,4 @@
+---
+patroni_parameters:
+  - {wal_keep_segments: 100}
+  - {unix_socket_directories: '/var/run/postgresql/'}

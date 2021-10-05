@@ -6,7 +6,10 @@ restapi:
   connect_address: {{ ansible_eth1.ipv4.address }}:8008
 
 etcd:
-  host: {{etcd_server}}:2379
+  hosts:
+{% for server in groups['etcd'] %}
+    - {{ hostvars[server].ansible_host }}:2379
+{% endfor %}
   protocol: http
 
 bootstrap:

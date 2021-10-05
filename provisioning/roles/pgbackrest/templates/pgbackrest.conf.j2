@@ -1,0 +1,21 @@
+{% if ansible_fqdn in groups['pg'] %}
+[main]
+pg1-path=/var/lib/postgresql/patroni_cluster/data
+
+[global]
+log-level-file=detail
+{% for h in groups['backup'] %}
+repo{{loop.index}}-host={{ hostvars[h].ansible_host }}
+{% endfor %}
+{% else %}
+[main]
+{% for server in groups['pg'] %}
+pg{{loop.index}}-path=/var/lib/postgresql/patroni_cluster/data
+pg{{loop.index}}-host={{ hostvars[server].ansible_host }}
+{% endfor %}
+
+[global]
+repo1-path=/var/lib/pgbackrest
+repo1-retention-full=2
+start-fast=y
+{% endif %}

@@ -1,12 +1,13 @@
 - hosts: backup
   gather_facts: yes
+  become: yes
   roles:
     - postgres
-    - role: pgbackrest
-      client: False
+    - pgbackrest
 
 - hosts: etcd
   gather_facts: yes
+  become: yes
   roles:
     - role: andrewrothstein.etcd-cluster
       etcd_secure: False
@@ -15,8 +16,8 @@
 
 - hosts: pg
   gather_facts: yes
+  become: yes
   roles:
     - postgres
     - patroni
-    - role: pgbackrest
-      client: true
+    - pgbackrest

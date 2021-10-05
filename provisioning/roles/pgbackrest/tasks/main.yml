@@ -5,6 +5,7 @@
 - name: Create user
   user:
     name: pgbackrest
+    comment: ""
 
 - name: Create log dir
   file:
@@ -13,7 +14,7 @@
     owner: pgbackrest
     group: pgbackrest
     mode: '770'
-    
+
 - name: Create pgbackrest lib dir
   file:
     path: /var/lib/pgbackrest
@@ -21,31 +22,14 @@
     owner: pgbackrest
     group: pgbackrest
 
-# - name: Create pgbackrest dir
-#   file:
-#     path: /etc/pgbackrest/conf.d
-#     state: directory
-#     owner: pgbackrest
-#     group: pgbackrest
-
 - name: Create config file
   template:
-    src: pgbackrest.conf_server.j2
-    dest: /etc/pgbackrest.conf
-    owner: pgbackrest
-    group: pgbackrest
-    mode: '640'
-  when: client == false
-
-- name: Create config file
-  template:
-    src: pgbackrest.conf_client.j2
+    src: pgbackrest.conf.j2
     dest: /etc/pgbackrest.conf
     owner: pgbackrest
     group: postgres
     mode: '640'
-  when: client == true
-    
+
 # - name: Create repository host key pair
 #   file:
 #     path: /home/pgbackrest/.ssh

@@ -20,7 +20,7 @@
     src: patroni.yml.j2
     dest: /var/lib/postgresql/patroni.yml
     owner: postgres
-    mode: '0600'
+    mode: '600'
 
 - name: Copy patroni service
   template:
@@ -28,9 +28,10 @@
     dest: /etc/systemd/system/patroni.service
     owner: root
     group: root
+    mode: '644'
 
-- name: Start patroni service
-  systemd:
-    name: patroni
-    state: started
-    daemon_reload: yes
+# - name: Start patroni service
+#   systemd:
+#     name: patroni
+#     state: started
+#     daemon_reload: yes
